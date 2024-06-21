@@ -32,7 +32,7 @@ body {
 .container {
     position: relative;
     min-height: 100vh;
-    overflow: hidden;xx
+    overflow: hidden;
 }
 
 .row {

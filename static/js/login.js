@@ -1,12 +1,15 @@
-document.addEventListener("DOMContentLoaded", function() {
+document.addEventListener('DOMContentLoaded', () => {
     let container = document.getElementById('container');
-
-    function toggle() {
-        container.classList.toggle('sign-in');
-        container.classList.toggle('sign-up');
+    if (container) {
+        setTimeout(() => {
+            container.classList.add('sign-in');
+        }, 200);
+    } else {
+        console.error("Container element not found.");
     }
-
-    setTimeout(() => {
-        container.classList.add('sign-in');
-    }, 200);
 });
+
+function toggle() {
+	container.classList.toggle('sign-in');
+	container.classList.toggle('sign-up');
+}
