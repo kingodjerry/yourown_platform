@@ -1,42 +1,64 @@
 <!DOCTYPE html>
-<html lang="en">
-
+<html lang="en" >
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login2</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-    <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Platform Login</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/login.css') }}">
 </head>
-
 <body>
-    <div class="App">
-        <div class="form">
-            <h2>Login</h2>
-            <form method="POST" action="/login">
-                <div class="input">
-                    <div class="inputBox">
-                        <label for="username">Username</label>
-                        <input type="text" id="username" placeholder="example@test.com" name="id" />
-                    </div>
-                    <div class="inputBox">
-                        <label for="password">Password</label>
-                        <input type="password" id="password" placeholder="......." name="password" />
-                    </div>
-                    <div class="inputBox">
-                        <input type="submit" value="Sign In" />
-                    </div>
-                </div>
-            </form>
-
-            <p class="forget">
-                Forget Password? <a href="#">Click Here!</a>
-            </p>
+<div class="wrapper">
+  <div class="container">
+    <div class="sign-up-container">
+      <form>
+        <h1>Create Account</h1>
+        <div class="social-links">
+          <div>
+            <a href="#"><i class="fa fa-facebook" aria-hidden="true"></i></a>
+          </div>
+          <div>
+            <a href="#"><i class="fa fa-twitter" aria-hidden="true"></i></a>
+          </div>
+          <div>
+            <a href="#"><i class="fa fa-linkedin" aria-hidden="true"></i></a>
+          </div>
         </div>
+        <span>or use your email for registration</span>
+        <input type="text" placeholder="Name">
+        <input type="id" placeholder="id">
+        <input type="password" placeholder="Password">
+        <button class="form_btn">Sign Up</button>
+      </form>
     </div>
-</body>
+    <div class="sign-in-container">
+      <form method="POST" action="/login">
+        <h1>Sign In</h1>
+        <div class="social-links">
+          <div>
+            <a href="#"><i class="fa fa-google" aria-hidden="true"></i></a>
+          </div>
+        </div>
+        <span>or use your account</span>
+        <input type="text" placeholder="ID" name="id" />
+        <input type="password" placeholder="Password" name="password" />
+        <button class="form_btn">Sign In</button>
+      </form>
+    </div>
+    <div class="overlay-container">
+      <div class="overlay-left">
+        <h1>Welcome!</h1>
+        <p>To keep connected with us please login with your personal info</p>
+        <button id="signIn" class="overlay_btn">Sign In</button>
+      </div>
+      <div class="overlay-right">
+        <h1>Hello, Friend</h1>
+        <p>Enter your personal details and start journey with us</p>
+        <button id="signUp" class="overlay_btn">Sign Up</button>
+      </div>
+    </div>
+  </div>
+</div>
 
+  <script src="{{ url_for('static', filename='js/login.js') }}"></script>
+</body>
 </html>

@@ -83,11 +83,15 @@ body {
   font-size: 18px;
 }
 
-.forget {
+.account {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  font-size: 14px;
   margin-top: 30px;
   color: #555;
 }
 
-.forget a {
+.account a {
   color: #ff0047;
 }

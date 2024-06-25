@@ -1,21 +1,19 @@
-from flask import Flask, jsonify
-from sqlalchemy import create_engine, text
+from . import db
 
-def create_app():
-    app = Flask(__name__)
-    app.config.from_pyfile("config.py")
-    
-    database = create_engine(app.config['db_url'], encoding='utf-8', max_overflow=0)
-    app.database = database
-    
-    @app.route('/example/<string:user_name>', methods=['GET'])
-    def get_email(user_name):
-        params = {'name': user_name}
-        row = app.database.execute(text("""
-            SELECT * 
-            FROM users 
-            WHERE name = :name
-        """), params).fetchone()
-        return jsonify({'email': row['email']})
-    
-    return app
+class User(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100), nullable=False)
+    email = db.Column(db.String(100), unique=True, nullable=False)
+    password = db.Column(db.String(100), nullable=False)
+    profile = db.Column(db.String(100), nullable=False)
+
+    def __repr__(self):
+        return '<User %r>' % self.name
+
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'name': self.name,
+            'email': self.email,
+            'profile': self.profile
+        }
