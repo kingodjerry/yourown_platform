@@ -1,9 +1,16 @@
-# config.py
-import os
+db = {
+    'user': 'root',
+    'password': '1234',
+    'host': 'localhost',
+    'port': 3309,
+    'database': 'platform'
+}
+
+# MySQL 연결 문자열 생성
+db_url = f"mysql+mysqlconnector://{db['user']}:{db['password']}@" \
+         f"{db['host']}:{db['port']}/{db['database']}?charset=utf8"
 
 class Config:
-    SECRET_KEY = os.urandom(24)
-    MYSQL_HOST = 'localhost'
-    MYSQL_USER = 'root'
-    MYSQL_PASSWORD = '1234'
-    MYSQL_DB = 'Closed'
+    SQLALCHEMY_DATABASE_URI = db_url
+    SQLALCHEMY_TRACK_MODIFICATIONS = False
+    SECRET_KEY = 'smartplatform'
