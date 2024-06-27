@@ -1,56 +1,31 @@
 import flask
 import flask_login
 from config import Config
-from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import create_engine, Column, Integer, String, Date, DateTime, Enum
-from sqlalchemy.orm import sessionmaker
 import datetime
 import bcrypt
-from flask_oauthlib.client import OAuth
+import ssl
+from model.model import User, db, Session
+from model.google import init_google_oauth
+
+# SSL 검증 비활성화
+if getattr(ssl, '_create_unverified_context', None):
+    ssl._create_default_https_context = ssl._create_unverified_context
 
 app = flask.Flask(__name__)
 app.config.from_object(Config)
 
-#구글 로그인
-oauth = OAuth(app)
-google = oauth.remote_app(
-    'google',
-    consumer_key=app.config.get('GOOGLE_OAUTH2_CLIENT_ID'),
-    consumer_secret=app.config.get('GOOGLE_OAUTH2_CLIENT_SECRET'),
-    request_token_params={
-        'scope': 'email'
-    },
-    base_url='https://www.googleapis.com/oauth2/v1/',
-    request_token_url=None,
-    access_token_method='POST',
-    access_token_url='https://accounts.google.com/o/oauth2/token',
-    authorize_url='https://accounts.google.com/o/oauth2/auth',
-)
-
-# 데이터베이스 연결 
-db = SQLAlchemy(app)
-engine = create_engine(app.config['SQLALCHEMY_DATABASE_URI'])
-Session = sessionmaker(bind=engine)
+# 데이터베이스 초기화
+db.init_app(app)
 
 # 로그인 매니저 초기화
 login_manager = flask_login.LoginManager()
 login_manager.init_app(app)
 
-class User(db.Model, flask_login.UserMixin):
-    __tablename__ = 'users'
-    UserID = Column(Integer, primary_key=True)
-    ID = Column(String(11))
-    Username = Column(String(255))
-    Password = Column(String(255))
-    Email = Column(String(255))
-    Phone = Column(String(20))
-    DateOfBirth = Column(Date)
-    DateJoined = Column(DateTime)
-    LastLogin = Column(DateTime)
-    Status = Column(Enum('active', 'inactive', name='user_status'))
-
-    def get_id(self):
-        return self.ID
+# 구글 로그인 설정
+google = init_google_oauth(
+    app.config.get('GOOGLE_OAUTH2_CLIENT_ID'),
+    app.config.get('GOOGLE_OAUTH2_CLIENT_SECRET')
+)
 
 @login_manager.user_loader
 def load_user(id):
@@ -59,13 +34,7 @@ def load_user(id):
     session.close()
     return user
 
-@app.route('/')
-def home():
-    if flask_login.current_user.is_authenticated:
-        return flask.render_template('main.html')
-    else:
-        return flask.redirect(flask.url_for('login'))
-
+#-------------------------------------------------로그인 관련-------------------------------------------------
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if flask.request.method == 'POST':
@@ -78,7 +47,7 @@ def login():
             # 데이터베이스에 저장된 해시된 비밀번호와 입력된 비밀번호 비교
             if bcrypt.checkpw(password.encode('utf-8'), user.Password.encode('utf-8')):
                 flask_login.login_user(user)
-                return flask.redirect(flask.url_for("main"))
+                return flask.redirect(flask.url_for("home"))
             else:
                 flask.flash('Login failed. Please check your username and password.', 'error')
                 return flask.redirect(flask.url_for('login'))
@@ -92,21 +61,20 @@ def login():
 def google_login():
     return google.authorize(callback=flask.url_for('google_callback', _external=True))
 
+# 구글 OAuth 콜백 처리
 @app.route('/google/callback')
-@google.authorized_handler
-def google_callback(resp):
-    if resp is None:
+def google_callback():
+    resp = google.authorized_response()
+    if resp is None or resp.get('access_token') is None:
         return 'Access denied: reason=%s error=%s' % (
             flask.request.args['error_reason'],
             flask.request.args['error_description']
         )
     flask.session['google_token'] = (resp['access_token'], '')
     user_info = google.get('userinfo')
-    # Example of how to access user information from Google:
-    # email = user_info.data['email']
-    # name = user_info.data['name']
-    # Implement logic to check if the user exists and login/register as needed
-    return flask.redirect(flask.url_for('main'))
+    # 사용자 정보 처리
+    # 예시: email = user_info.data['email']
+    return flask.redirect(flask.url_for('home'))
 
 @google.tokengetter
 def get_google_oauth_token():
@@ -157,21 +125,31 @@ def get_personal_information():
         personal_information = file.read()
     return personal_information
 
+#로그아웃
 @app.route("/logout")
 def logout():
     flask_login.logout_user()
     return "Logged out"
 
+#아이디 중복 확인
 @app.route('/check_id', methods=['GET'])
 def check_id():
     join_id = flask.request.args.get('join_id')
     user = User.query.filter_by(ID=join_id).first()
     return flask.jsonify({'exists': user is not None})
 
-@app.route("/main")
-@flask_login.login_required
-def main():
-    return flask.render_template('main.html')
+@app.context_processor
+def inject_flask_login():
+    return dict(flask_login=flask_login)
+#-----------------------------------------------------------------------------------------------------------
+
+@app.route('/')
+def home():
+    if flask_login.current_user.is_authenticated:
+        return flask.render_template('home.html')
+    else:
+        return flask.redirect(flask.url_for('login'))
+
 
 if __name__ == '__main__':
     app.run(debug=app.config['DEBUG'])

@@ -3,10 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
     <!-- CSS -->
-    <link rel="stylesheet" href="static/css/sidebar.css">
-
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/sidebar.css') }}">
     <title>SmartPlatform Sidebar</title>
 </head>
 <body id="body-pd">
@@ -15,10 +13,10 @@
             <div>
                 <div class="nav__brand">
                     <ion-icon name="menu-outline" class="nav__toggle" id="nav-toggle"></ion-icon>
-                    <a href="#" class="nav__logo">YouOwn</a>
+                    <a href="{{ url_for('home') }}" class="nav__logo">YouOwn</a>
                 </div>
                 <div class="nav__list">
-                    <a href="#" class="nav__link active">
+                    <a href="{{ url_for('home') }}" class="nav__link active">
                         <ion-icon name="home-outline" class="nav__icon"></ion-icon>
                         <span class="nav_name">Home</span>
                     </a>
@@ -40,6 +38,6 @@
     <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
     <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
     <!-- JS -->
-    <script src="static/js/sidebar.js"></script>
+    <script src="{{ url_for('static', filename='js/sidebar.js') }}"></script>
 </body>
 </html>
