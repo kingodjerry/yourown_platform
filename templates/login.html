@@ -1,9 +1,10 @@
 <!DOCTYPE html>
-<html lang="en" >
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Platform Login</title>
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/login.css') }}">
 </head>
 <body>
@@ -18,17 +19,28 @@
           </div>
         </div>
         <span>or use your email for registration</span>
-        <input type="text" name = "name" placeholder="Name">
-        <input type="id" name ="join_id" placeholder="ID(특수문자 제외, 6자 이상)">
-        <input type="password" name="join_pwd" placeholder="PWD(8~20자, 문자/숫자/특수문자)">
+        <input type="text" name="name" placeholder="Name">
+        <div class="input-container">
+          <input type="text" name="join_id" id="join_id" placeholder="ID(특수문자 X, 6자 이상)" style="width: 100%;">
+          <button type="button" id="checkIdBtn">중복확인</button>
+        </div>
+        <span class="material-icons icon" id="idCheckIcon"></span>
+        <div id="idFeedback" class="feedback"></div>
+        <input type="password" name="join_pwd" id="join_pwd" placeholder="PWD(8~20자, 문자/숫자/특수문자)">
+        <div id="pwdFeedback" class="feedback"></div>
         <input type="date" name="birth" min="1900-01-01" id="birthDate" required>
         <input type="tel" name="phone" oninput="hypenTel(this)" maxlength="13" placeholder="Phone">
         <input type="email" name="email" placeholder="email">
+        <select name="title" id="title">
+          <option value="">원하는 칭호를 선택하세요</option>
+          <option value="dieter">다이어터</option>
+          <option value="newborn">갓생러</option>
+        </select>
         <div class="postcode-container">
           <input type="text" name="postcode" id="sample6_postcode" disabled placeholder="우편번호">
           <input type="button" onclick="sample6_execDaumPostcode()" value="우편번호 찾기">
         </div>
-        <input type="text" name="address" id="sample6_address"  disabled placeholder="주소">
+        <input type="text" name="address" id="sample6_address" disabled placeholder="주소">
         <input type="text" name="address2" id="sample6_detailAddress" placeholder="상세주소">
         <input type="text" name="address3" id="sample6_extraAddress" placeholder="참고항목">
         <button class="form_btn">Sign Up</button>
@@ -84,8 +96,8 @@
   </div>
 </div>
 
-  <script src="{{ url_for('static', filename='js/login.js') }}"></script>
-  <!-- Kakao postcode API -->
-  <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+<script src="{{ url_for('static', filename='js/login.js') }}"></script>
+<!-- Kakao postcode API -->
+<script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
 </body>
 </html>

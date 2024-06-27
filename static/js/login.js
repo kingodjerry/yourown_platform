@@ -118,3 +118,57 @@ document.querySelector('.sign-up-container form').addEventListener('submit', fun
   }
 
 });
+
+// 아이디 중복 및 규칙 확인
+document.getElementById('checkIdBtn').addEventListener('click', function() {
+  const joinId = document.getElementById('join_id').value;
+  const idCheckIcon = document.getElementById('idCheckIcon');
+  const idFeedback = document.getElementById('idFeedback');
+
+  fetch(`/check_id?join_id=${joinId}`)
+    .then(response => response.json())
+    .then(data => {
+      if (data.exists) {
+        idCheckIcon.textContent = 'cancel';
+        idCheckIcon.style.color = 'red';
+        idFeedback.style.color = 'red';
+      } else {
+        idCheckIcon.textContent = 'check_circle';
+        idCheckIcon.style.color = 'green';
+        idFeedback.style.color = 'green';
+      }
+      idCheckIcon.style.display = 'inline';
+    })
+    .catch(error => {
+      console.error('Error checking ID:', error);
+    });
+});
+document.getElementById('join_id').addEventListener('input', function() {
+  const joinId = document.getElementById('join_id').value;
+  const idFeedback = document.getElementById('idFeedback');
+  const idCheckIcon = document.getElementById('idCheckIcon');
+
+  const idPattern = /^[a-zA-Z0-9]{6,}$/;
+
+  if (!idPattern.test(joinId)) {
+    idFeedback.textContent = '아이디는 특수문자 제외, 6자 이상이어야 합니다.';
+    idFeedback.style.color = 'red';
+    idCheckIcon.style.display = 'none';
+  } else {
+    idFeedback.textContent = '';
+  }
+});
+
+document.getElementById('join_pwd').addEventListener('input', function() {
+  const joinPwd = document.getElementById('join_pwd').value;
+  const pwdFeedback = document.getElementById('pwdFeedback');
+
+  const pwdPattern = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,20}$/;
+
+  if (!pwdPattern.test(joinPwd)) {
+    pwdFeedback.textContent = '비밀번호는 8-20자 이내, 문자, 숫자, 특수문자를 포함해야 합니다.';
+    pwdFeedback.style.color = 'red';
+  } else {
+    pwdFeedback.textContent = '';
+  }
+});

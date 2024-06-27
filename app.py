@@ -112,6 +112,7 @@ def google_callback(resp):
 def get_google_oauth_token():
     return flask.session.get('google_token')
 
+# 회원가입
 @app.route('/register', methods=['POST'])
 def register():
     name = flask.request.form.get('name')
@@ -144,25 +145,28 @@ def register():
     flask.flash('Account created successfully!', 'success')
     return flask.redirect(flask.url_for('login'))
 
+# 개인정보 동의 문서 읽어오기
 @app.route('/get_terms_of_use')
 def get_terms_of_use():
     with open('TermsofUse/TermsofUse.txt', 'r', encoding='utf-8') as file:
         terms_of_use = file.read()
     return terms_of_use
-
 @app.route('/get_personal_information')
 def get_personal_information():
     with open('TermsofUse/PersonalInformation.txt', 'r', encoding='utf-8') as file:
         personal_information = file.read()
     return personal_information
 
-
 @app.route("/logout")
 def logout():
     flask_login.logout_user()
     return "Logged out"
 
-
+@app.route('/check_id', methods=['GET'])
+def check_id():
+    join_id = flask.request.args.get('join_id')
+    user = User.query.filter_by(ID=join_id).first()
+    return flask.jsonify({'exists': user is not None})
 
 @app.route("/main")
 @flask_login.login_required
