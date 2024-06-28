@@ -96,7 +96,7 @@ document.addEventListener("DOMContentLoaded", () => {
   document.getElementById("birthDate").setAttribute('max', today);
 });
 
-// 계정 규칙 확인
+// 회원가입 버튼 이벤트
 document.querySelector('.sign-up-container form').addEventListener('submit', function(event) {
   const id = document.querySelector('input[name="join_id"]').value;
   const password = document.querySelector('input[name="join_pwd"]').value;
@@ -119,7 +119,7 @@ document.querySelector('.sign-up-container form').addEventListener('submit', fun
 
 });
 
-// 아이디 중복 및 규칙 확인
+// 아이디 중복 버튼 및 규칙 확인
 document.getElementById('checkIdBtn').addEventListener('click', function() {
   const joinId = document.getElementById('join_id').value;
   const idCheckIcon = document.getElementById('idCheckIcon');
@@ -134,13 +134,15 @@ document.getElementById('checkIdBtn').addEventListener('click', function() {
         idFeedback.style.color = 'red';
       } else {
         const idPattern = /^[a-zA-Z0-9]{6,}$/;
-
         if (!idPattern.test(joinId)) {
           idFeedback.textContent = '아이디는 특수문자 제외, 6자 이상이어야 합니다.';
           idFeedback.style.color = 'red';
-          idCheckIcon.style.display = 'none';
+          idCheckIcon.textContent = 'cancel';
+          idCheckIcon.style.color = 'red';
         } else {
           idFeedback.textContent = '';
+          idCheckIcon.textContent = 'check_circle';
+          idCheckIcon.style.color = 'green';
         }
       }
       idCheckIcon.style.display = 'inline';
@@ -164,7 +166,6 @@ document.getElementById('join_id').addEventListener('input', function() {
     idFeedback.textContent = '';
   }
 });
-
 document.getElementById('join_pwd').addEventListener('input', function() {
   const joinPwd = document.getElementById('join_pwd').value;
   const pwdFeedback = document.getElementById('pwdFeedback');

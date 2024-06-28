@@ -85,7 +85,7 @@ button {
   position: absolute;
   left: 0;
   width: 50%;
-  height: 120%;
+  height: 95%;
   opacity: 0;
   transition: all 0.5s;
   overflow-y: auto;
@@ -264,6 +264,7 @@ input[type="date"]::-webkit-calendar-picker-indicator:hover {
 pre {
   white-space: pre-wrap;
   word-wrap: break-word;
+  border: solid black 3px;
 }
 
 .input-container {

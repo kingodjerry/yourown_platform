@@ -4,7 +4,7 @@ from config import Config
 import datetime
 import bcrypt
 import ssl
-from model.model import User, db, Session
+from model.model import User, UserProfiles, UserRoles, Roles, Permissions, db, Session
 from model.google import init_google_oauth
 
 # SSL 검증 비활성화
@@ -71,9 +71,54 @@ def google_callback():
             flask.request.args['error_description']
         )
     flask.session['google_token'] = (resp['access_token'], '')
-    user_info = google.get('userinfo')
-    # 사용자 정보 처리
-    # 예시: email = user_info.data['email']
+    user_info = google.get('userinfo').data
+
+    email = user_info['email']
+    name = user_info.get('name', '')
+
+    session = Session()
+    user = session.query(User).filter_by(Email=email).first()
+
+    if user is None:
+        new_user = User(
+            ID=email,  
+            Username=name,
+            Password='', 
+            Email=email,
+            Phone='',
+            DateOfBirth=None,
+            DateJoined=datetime.datetime.now(),
+            Status='active'
+        )
+        session.add(new_user)
+        session.commit()
+
+        new_user_profile = UserProfiles(
+            UserID=new_user.UserID,
+            ID=email,
+            Username=name,
+            FirstName='새로운',
+            LastName='뉴비',
+            Address=''
+        )
+        session.add(new_user_profile)
+        session.commit()
+
+        default_role = session.query(Roles).filter_by(RoleName='Basic User').first()
+        default_permission = session.query(Permissions).filter_by(PermissionName='User').first()
+
+        new_user_role = UserRoles(
+            UserID=new_user.UserID,
+            RoleID=default_role.RoleID,
+            PermissionID=default_permission.PermissionID
+        )
+        session.add(new_user_role)
+        session.commit()
+
+        user = new_user
+
+    session.close()
+    flask_login.login_user(user)
     return flask.redirect(flask.url_for('home'))
 
 @google.tokengetter
@@ -89,10 +134,16 @@ def register():
     birth = flask.request.form.get('birth')
     phone = flask.request.form.get('phone')
     email = flask.request.form.get('email')
+    address = flask.request.form.get('address')
+    address2 = flask.request.form.get('address2')
+    address3 = flask.request.form.get('address3')
 
     # 비밀번호 암호화
     hashed_pwd = bcrypt.hashpw(join_pwd.encode('utf-8'), bcrypt.gensalt())
-
+    full_address = f"{address}, {address2}, {address3}"
+    
+    session = Session()
+    
     # 데이터베이스 저장
     new_user = User(
         ID=join_id,
@@ -104,9 +155,29 @@ def register():
         DateJoined= datetime.datetime.now(),
         Status='active'
     )
-
-    session = Session()
     session.add(new_user)
+    session.commit()
+
+    new_user_profile = UserProfiles(
+        UserID=new_user.UserID, 
+        ID=join_id, 
+        Username=name,
+        FirstName="새로운",
+        LastName="뉴비",
+        Address=full_address
+    )
+    db.session.add(new_user_profile)
+    db.session.commit()
+
+    default_role = session.query(Roles).filter_by(RoleName='Basic User').first()
+    default_permission = session.query(Permissions).filter_by(PermissionName='User').first()
+
+    new_user_role = UserRoles(
+        UserID=new_user.UserID,
+        RoleID=default_role.RoleID,
+        PermissionID=default_permission.PermissionID
+    )
+    session.add(new_user_role)
     session.commit()
     session.close()
 
@@ -149,6 +220,10 @@ def home():
         return flask.render_template('home.html')
     else:
         return flask.redirect(flask.url_for('login'))
+
+@app.route('/account')
+def account():
+    return flask.render_template('account.html')
 
 @app.route('/error')
 def error():
