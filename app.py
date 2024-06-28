@@ -150,6 +150,21 @@ def home():
     else:
         return flask.redirect(flask.url_for('login'))
 
+@app.route('/error')
+def error():
+    return flask.render_template('error.html')
+
+@app.route('/donotdisturb')
+def donotdisturb():
+    return flask.render_template('donotdisturb.html')
+
+@app.route('/introdeveloper')
+def introdeveloper():
+    return flask.render_template('introdeveloper.html')
+
+@app.route('/introservice')
+def introservice():
+    return flask.render_template('introservice.html')
 
 if __name__ == '__main__':
     app.run(debug=app.config['DEBUG'])

@@ -133,9 +133,15 @@ document.getElementById('checkIdBtn').addEventListener('click', function() {
         idCheckIcon.style.color = 'red';
         idFeedback.style.color = 'red';
       } else {
-        idCheckIcon.textContent = 'check_circle';
-        idCheckIcon.style.color = 'green';
-        idFeedback.style.color = 'green';
+        const idPattern = /^[a-zA-Z0-9]{6,}$/;
+
+        if (!idPattern.test(joinId)) {
+          idFeedback.textContent = '아이디는 특수문자 제외, 6자 이상이어야 합니다.';
+          idFeedback.style.color = 'red';
+          idCheckIcon.style.display = 'none';
+        } else {
+          idFeedback.textContent = '';
+        }
       }
       idCheckIcon.style.display = 'inline';
     })
